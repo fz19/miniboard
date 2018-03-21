@@ -1,0 +1,85 @@
+<?
+	require "setup.php";
+    
+    // prev, next 버튼 설정
+    $prev = $page - 1;
+    $next = $page + 1;
+    if ($prev < 1)
+    	$prev = 1;
+    if ($next > $setting[max_page])
+    	$next = $setting[max_page];
+    $prev = "?mode=list&page=" . $prev . $setting[list_parameter];
+    $next = "?mode=list&page=" . $next . $setting[list_parameter];
+    
+    $thum_dir = $setting[upload_dir] . "Thumnails_" . $setting[boardID]; // 썸네일 디렉토리
+    $thum_dir_url = $setting[upload_url] . "Thumnails_" . $setting[boardID]; // 썸네일 디렉토리 URL
+    if (!is_dir($thum_dir)) mkdir($thum_dir); // 디렉토리가 없다면 생성
+?>
+<br />
+  <div id="portfolio">
+  <ul>
+<?
+$highlight = strlen($setting[s_text][0]) > 0 && ($setting[s_field] == "subject" || $setting[s_field] == "subject_content");
+$count = $setting[bbs_count]-($page-1)*$setting[list_count];
+foreach ($list as $row):
+	$no = $count--;
+    $class = $row[accept]=="N"?"reject":"";
+    
+    if ($highlight) {
+	   	foreach ($setting[s_text] as $word)
+			$row[subject] = text_highlight($word,$row[subject]);
+    }
+?>
+<li>
+  <div class="img"><img src="images/pf01.jpg" width="180" height="140" /></div>
+  <dl>
+   <dt>행사명</dt>
+  <dd><?=replyIcon($row[space],$dir)?><a href="?mode=view&no=<?=$row[no]?><?=$setting[parameter]?>" class="<?=$class?>"><?=$row[subject]?></a></dd>
+  </dl>
+  <dl>
+  <dt>장 소 </dt>
+  <dd>고려대체육관</dd>
+  </dl>
+  <dl>
+  <dt>주 최 </dt>
+  <dd>오스카제약(주)</dd>
+  </dl>
+  <dl>
+  <dt>행사내용</dt>
+  <dd>대표인사 과별체육대회 시상</dd>
+  </dl>
+</li>
+<? endforeach; ?>
+  </ul>
+  </div>
+  
+  <table width="670" border="0" cellpadding="5" cellspacing="0" class="text">
+    <tr >
+      <td width="210" rowspan="3"><?=$row[image]?>
+          <?=replyIcon($row[space],$dir)?>
+              <a href="?mode=view&amp;no=<?=$row[no]?><?=$setting[parameter]?>" class="<?=$class?>">                </td>
+      <td width="100">행사명</td>
+      <td><?=$row[subject]?></td>
+    </tr>
+    <tr>
+      <td width="100">장 소</td>
+      <td><?=$row[date]?></td>
+    </tr>
+    <tr>
+      <td width="100">주 최</td>
+      <td><?=$row[name]?></td>
+    </tr>
+    <tr>
+      <td colspan="2" align="left" class="pagenavi">
+              <a href="<?=$setting[prev_link]?>"><img src="<?=$dir?>images/button_prev1.gif" alt="prevpage" width="17" height="17" border="0" align="absmiddle" /></a>
+              <a href="<?=$prev?>"><img src="<?=$dir?>images/button_prev2.gif" width="40" height="17" border="0" alt="prev" align="absmiddle" /></a>
+              &nbsp;<?=$setting[page_navi]?>&nbsp;
+              <a href="<?=$next?>"><img src="<?=$dir?>images/button_next1.gif" width="40" height="17" border="0" alt="next" align="absmiddle" /></a>
+      <a href="<?=$setting[next_link]?>"><img src="<?=$dir?>images/button_next2.gif" width="17" height="17" border="0" alt="nextpage" align="absmiddle" /></a>  </td>
+      <td  align="right" class="pagenavi"><a href="?mode=list"><img src="<?=$dir?>images/button_list.gif" width="60" height="21" border="0" alt="list" align="absmiddle" /></a>
+              <? if (!$setting[protect]) : ?>
+              <a href="?mode=write"><img src="<?=$dir?>images/button_write.gif" width="60" height="21" border="0" alt="write" align="absmiddle" /></a>
+      <? endif; ?></td>
+    </tr>
+</table>
+<br />

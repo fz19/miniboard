@@ -1,0 +1,93 @@
+<?
+	require "setup.php";
+    
+    // prev, next 버튼 설정
+    $prev = $page - 1;
+    $next = $page + 1;
+    if ($prev < 1)
+    	$prev = 1;
+    if ($next > $setting[max_page])
+    	$next = $setting[max_page];
+    $prev = "?mode=list&page=" . $prev . $setting[list_parameter];
+    $next = "?mode=list&page=" . $next . $setting[list_parameter];
+?>
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td height="40" align="right" class="text">
+        <form name="search" method="get" action="" onSubmit="return searchCheck(this)">
+          <input type="hidden" name="mode" value="list" />
+          <select name="s_field" id="s_field">
+            <option value="subject"<?=$setting[s_field]=="subject"?" selected":""?>>제목</option>
+            <option value="content"<?=$setting[s_field]=="content"?" selected":""?>>내용</option>
+            <option value="name"<?=$setting[s_field]=="name"?" selected":""?>>작성자</option>
+            <option value="subject_content"<?=$setting[s_field]=="subject_content"?" selected":""?>>제목+내용</option>
+          </select>
+          <input name="s_text" type="text" class="input" id="s_text" value="<?=@implode(" ",$setting[s_text])?>" />
+          <input type="image" src="<?=$dir?>images/button_search.gif" width="60" height="21" border="0" alt="search" align="absmiddle" />
+      </form>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr bgcolor="#FF9900"> 
+            <td height="2" colspan="4" bgcolor="#B17A14"></td>
+          </tr>
+          <tr> 
+            <th width="30" height="27" class="text">번호</th>
+            <th colspan="2" class="text">제목</th>
+            <th width="80" class="text">작성일</th>
+          </tr>
+          <tr bgcolor="#FF9900"> 
+            <td height="1" colspan="4" bgcolor="#B17A14"></td>
+          </tr>
+<?
+$highlight = strlen($setting[s_text][0]) > 0 && ($setting[s_field] == "subject" || $setting[s_field] == "subject_content");
+$count = $setting[bbs_count]-($page-1)*$setting[list_count];
+foreach ($list as $row):
+	$no = $count--;
+    $class = $row[accept]=="N"?"reject":"";
+    
+    if ($highlight) {
+	   	foreach ($setting[s_text] as $word)
+			$row[subject] = text_highlight($word,$row[subject]);
+    }
+?>
+          <tr class="text a-left"> 
+            <td height="27"><div align="center"><?=$no?></div></td>
+            <td colspan="2"><?=replyIcon($row[space],$dir)?><a href="?mode=view&no=<?=$row[no]?><?=$setting[parameter]?>" class="<?=$class?>"><?=$row[subject]?></a></td>
+            <td><div align="center"><?=$row[date]?>
+            </div></td>
+          </tr>
+          <tr> 
+            <td height="1" colspan="4" bgcolor="#F1F1F1"></td>
+          </tr>
+<? endforeach; ?>
+          <tr> 
+            <td height="1" colspan="4" bgcolor="#F1F1F1"></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+		  <tr>
+            <td height="40" class="pagenavi">
+              <a href="<?=$setting[prev_link]?>"><img src="<?=$dir?>images/button_prev1.gif" alt="prevpage" width="17" height="17" border="0" align="absmiddle" /></a>
+              <a href="<?=$prev?>"><img src="<?=$dir?>images/button_prev2.gif" width="40" height="17" border="0" alt="prev" align="absmiddle" /></a>
+              &nbsp;<?=$setting[page_navi]?>&nbsp;
+              <a href="<?=$next?>"><img src="<?=$dir?>images/button_next1.gif" width="40" height="17" border="0" alt="next" align="absmiddle" /></a>
+              <a href="<?=$setting[next_link]?>"><img src="<?=$dir?>images/button_next2.gif" width="17" height="17" border="0" alt="nextpage" align="absmiddle" /></a>
+            </td>
+            <td align="right">
+              <a href="?mode=list"><img src="<?=$dir?>images/button_list.gif" width="60" height="21" border="0" alt="list" align="absmiddle" /></a>
+              <? if (!$setting[protect]) : ?>
+              <a href="?mode=write"><img src="<?=$dir?>images/button_write.gif" width="60" height="21" border="0" alt="write" align="absmiddle" /></a>
+              <? endif; ?>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>

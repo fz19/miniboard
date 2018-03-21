@@ -1,0 +1,124 @@
+<?
+	require "setup.php";
+
+    // 검색어가 있을경우 제목, 내용에 하이라이트
+    if (strlen($setting[s_text][0]) > 0) {
+        foreach ($setting[s_text] as $word) {
+     	    if ($setting[s_field] == "subject" || $setting[s_field] == "subject_content")
+            	$data[subject] = text_highlight($word,$data[subject]);
+            if ($setting[s_field] == "content" || $setting[s_field] == "subject_content")
+            	$data[content] = text_highlight($word,$data[content]);
+        }
+    }
+    
+    // 첨부파일이 이미지일경우 내용에 표시
+    $max_width = 660; // 게시판의 가로 크기 설정
+    $image_preview = "";
+    if ($data[file1] && (eregi("\.jpg",$data[file1]) || eregi("\.gif",$data[file1]) || eregi("\.png",$data[file1]))) {
+    	$img = $setting[bbs_url] . "download.php?no=" . $data[uid] . "&code=" . urlencode($data[file1]) . "&type=none";
+        $size = getimagesize($data[file1_src]);
+        $width = $size[0];
+        if ($width > $max_width)
+        	$width = $max_width;
+    	$image_preview .= "<a href=\"" . $img . "\" target=\"_blank\"><img src=\"" . $img . "\" width=\"" . $width . "\" border=\"0\" /></a><br /><br />";
+    }
+    if ($data[file2] && (eregi("\.jpg",$data[file2]) || eregi("\.gif",$data[file2]) || eregi("\.png",$data[file2]))) {
+    	$img = $setting[bbs_url] . "download.php?no=" . $data[uid] . "&code=" . urlencode($data[file2]) . "&type=none";
+        $size = getimagesize($data[file2_src]);
+        $width = $size[0];
+        if ($width > $max_width)
+        	$width = $max_width;
+    	$image_preview .= "<a href=\"" . $img . "\" target=\"_blank\"><img src=\"" . $img . "\" width=\"" . $width . "\" border=\"0\" /></a><br /><br />";
+    }
+?>
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr> 
+      <td>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr bgcolor="#B7B7B7"> 
+            <td height="2" colspan="4"></td>
+          </tr>
+          <tr> 
+            <th width="70" height="27" bgcolor="#F2F2F2" class="ptext">제목</th>
+            <td colspan="3" class="text a-left">
+              &nbsp;<?=$data[subject]?>
+            </td>
+          </tr>
+          <tr bgcolor="#F2F2F2"> 
+            <td height="1" colspan="4" background="<?=$dir?>images/line.gif"></td>
+          </tr>
+          <tr> 
+            <th height="27" bgcolor="#F2F2F2" class="ptext">작성자</th>
+            <td class="text">
+              &nbsp;<?=$data[name]?>            </td>
+            <th width="70" bgcolor="#F2F2F2" class="ptext">작성일</th>
+            <td class="text">
+              &nbsp;<?=$data[write_date]?>            </td>
+          </tr>
+          <? if($data[file1]) : ?>
+          <tr bgcolor="#F2F2F2"> 
+            <td height="1" colspan="4" background="<?=$dir?>images/line.gif"></td>
+          </tr>
+          <tr> 
+            <th height="27" bgcolor="#F2F2F2" class="ptext">첨부파일1</th>
+            <td colspan="3" class="text">
+              &nbsp;
+              <a href="<?=$setting[bbs_url]?>download.php?no=<?=$data[uid]?>&code=<?=urlencode($data[file1])?>"><?=$data[file1]?></a>
+              (<?=@filesize($data[file1_src])?> Byte)
+            </td>
+          </tr>
+          <? endif; ?>
+          <? if($data[file2]) : ?>
+          <tr bgcolor="#F2F2F2"> 
+            <td height="1" colspan="4" background="<?=$dir?>images/line.gif"></td>
+          </tr>
+          <tr> 
+            <th height="27" bgcolor="#F2F2F2" class="ptext">첨부파일2</th>
+            <td colspan="3" class="text">
+              &nbsp;
+              <a href="<?=$setting[bbs_url]?>download.php?no=<?=$data[uid]?>&code=<?=urlencode($data[file2])?>"><?=$data[file2]?></a>
+              (<?=@filesize($data[file2_src])?> Byte)
+            </td>
+          </tr>
+          <? endif; ?>
+          <tr bgcolor="#B7B7B7"> 
+            <td height="1" colspan="4"></td>
+          </tr>
+          <tr> 
+            <td height="100" colspan="4" valign="top" class="txtcontent">
+<?=$image_preview?>
+              <div class="a-left">
+                <?=nl2br($data[content])?>
+              </div>
+            </td>
+          </tr>
+          <tr bgcolor="#B7B7B7"> 
+            <td height="1" colspan="4"><img src=""  height="1"></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr height="35" valign="bottom">
+      <td>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr> 
+            <td>
+              <a href="?mode=list<?=$setting[parameter]?>"><img src="<?=$dir?>images/button_list.gif" width="60" height="21" border="0" align="absmiddle" alt="list" /></a>
+            </td>
+            <td align="right">
+              <? if (!$setting[protect]) : ?>
+                <? if ($setting[admin] && $data[accept] == "N") : ?>
+                  <a href="?mode=acceptAction&no=<?=$data[uid]?><?=$setting[parameter]?>"><img src="<?=$dir?>images/button_accept.gif" width="60" height="21" border="0" alt="accept" /></a>
+                <? elseif ($setting[admin] && $data[accept] == "Y") : ?>
+                  <a href="?mode=rejectAction&no=<?=$data[uid]?><?=$setting[parameter]?>"><img src="<?=$dir?>images/button_reject.gif" width="60" height="21" border="0" alt="reject" /></a>
+                <? endif; ?>
+              <a href="?mode=delete&no=<?=$data[uid]?><?=$setting[parameter]?>"><img src="<?=$dir?>images/button_delete.gif" width="60" height="21" border="0" alt="delete" /></a>
+              <a href="?mode=modify&no=<?=$data[uid]?><?=$setting[parameter]?>"><img src="<?=$dir?>images/button_modify.gif" width="60" height="21" border="0" alt="modify" /></a>
+              <a href="?mode=reply&no=<?=$data[uid]?><?=$setting[parameter]?>"><img src="<?=$dir?>images/button_reply.gif" width="60" height="21" border="0" alt="reply" /></a>
+              <? endif; ?>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>

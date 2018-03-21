@@ -1,0 +1,31 @@
+<?
+	require "setup.php";
+?>
+<form method="post" action="?mode=deleteAction<?=$setting[parameter]?>" onSubmit="return passwordCheck(this)">
+<input type="hidden" name="no" value="<?=$setting[uid]?>" />
+<div class="miniboard-wrapper miniboard-skin-default">
+	<div class="miniboard-alert">
+        <div class="miniboard-table-top"></div>
+        <table class="miniboard-alert-table">
+          <tr class="header">
+            <th colspan="2"><?=$setting[uid]?>번 게시글을 삭제합니다.</th>
+          </tr>
+          <? if (!$setting[admin]) : ?>
+          <tr>
+            <th>비밀번호</th>
+            <td>
+              <input type="password" name="password" id="password">
+            </td>
+          </tr>
+          <? endif; ?>
+        </table>
+        <div class="miniboard-bottom">
+            <div class="miniboard-list-buttons">
+              <a class="button-middle btn-list" href="?mode=list<?=$setting[parameter]?>">목록</a>
+              <a class="button-middle" href="#" onclick="history.back()">취소</a>
+              <button class="button-middle" type="submit">삭제</button>
+            </div>
+        </div>
+    </div>
+</div>
+</form>

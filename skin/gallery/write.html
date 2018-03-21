@@ -1,0 +1,94 @@
+<?
+	require "setup.php";
+    
+    $title = "";
+    switch($setting[mode]) {
+    	case "write":
+        	$title = "작성";
+            break;
+        case "reply":
+        	$title = "답글 작성";
+            break;
+        case "modify":
+        	$title = "수정";
+            break;
+    }
+?>
+<form action="?mode=writeAction<?=$setting[parameter]?>" method="post" enctype="multipart/form-data" onSubmit="return formCheck(this)">
+<!--<input type="hidden" name="MAX_FILE_SIZE" value="2048" />-->
+<input type="hidden" name="no" value="<?=$data[uid]?>" />
+<input type="hidden" name="writeMode" value="<?=$setting[mode]?>" />
+ <div class="miniboard-wrapper miniboard-skin-default">
+	<div class="miniboard-edit">
+    	<div class="miniboard-edit-title">
+        	게시글 <?=$title?>
+        </div>
+        <div class="miniboard-table-top"></div>
+  <table class="miniboard-edit-table">
+          <tr>
+            <th>게시글 설정</th>
+            <td>
+              <? if (!$setting[board_secret]) : ?>
+           	  <input name="is_secret" type="checkbox" id="is_secret" value="1"<?=checked($data[secret])?>>비밀글
+              <? endif; ?>
+              <? if ($setting[mode] == "write" && $setting[admin]) :?>
+              <input name="is_notice" type="checkbox" id="is_notice" value="1"<?=checked($data[notice])?>>공지사항
+              <? endif; ?>
+              <input name="is_html" type="checkbox" id="is_html" value="1"<?=checked($data[html])?>>HTML
+            </td>
+          </tr>
+          <? if (!$setting[admin]) : ?>
+          <tr>
+            <th>비밀번호</th>
+            <td><input type="password" name="password" id="password">
+              비밀글 열람이나 게시글 수정, 삭제에 사용됩니다.</td>
+          </tr>
+          <? endif; ?>
+          <tr> 
+            <th>작성자</th>
+            <td><input name="name" type="text" id="name" value="<?=$data[name]?>"></td>
+          </tr>
+          <tr> 
+            <th>제목</th>
+            <td><input name="subject" type="text" id="subject" value="<?=$data[subject]?>" size="62"></td>
+          </tr>
+          <tr> 
+            <th>내용</th>
+            <td><textarea name="content" cols="60" rows="10" id="txtcontent"><?=$data[content]?></textarea></td>
+          </tr>
+          <? if ($setting[board_file] == true) : ?>
+          <tr> 
+            <th>첨부파일1</th>
+            <td><label>
+              <input name="file1" type="file" id="file1" size="40">
+            <? if($data[file1]) : ?>
+              <br>
+            <?=$data[file1]?> (<?=@filesize($data[file1_src])?> Byte) 
+            <input name="file1_del" type="checkbox" id="file1_del" value="delete">삭제</label>
+            <? endif; ?>
+            </td>
+          </tr>
+          <tr> 
+            <th>첨부파일2</th>
+            <td class="text"><input name="file2" type="file" id="file2" size="40">
+            <? if($data[file2]) : ?>
+            <br>
+            <?=$data[file2]?> (<?=@filesize($data[file2_src])?> Byte) 
+            <input name="file2_del" type="checkbox" id="file2_del" value="delete">
+            삭제
+            <? endif; ?>
+            </td>
+          </tr>
+          <? endif; ?>
+        </table>
+        
+        <div class="miniboard-bottom">
+            <div class="miniboard-list-buttons">
+              <a class="button-middle btn-list" href="?mode=list<?=$setting[parameter]?>">목록</a>
+              <a class="button-middle" href="#" onclick="history.back()">취소</a>
+              <button class="button-middle" type="submit">등록</button>
+            </div>
+        </div>
+	 </div>
+	</div>
+</form>

@@ -1,0 +1,84 @@
+<?
+	require "setup.php";
+
+    // 검색어가 있을경우 제목, 내용에 하이라이트
+    if (strlen($setting[s_text][0]) > 0) {
+        foreach ($setting[s_text] as $word) {
+     	    if ($setting[s_field] == "subject" || $setting[s_field] == "subject_content")
+            	$data[subject] = text_highlight($word,$data[subject]);
+            if ($setting[s_field] == "content" || $setting[s_field] == "subject_content")
+            	$data[content] = text_highlight($word,$data[content]);
+        }
+    }
+    
+    // 첨부파일이 이미지일경우 내용에 표시
+    $image_preview = "";
+    if ($data[file1] && (eregi("\.jpg",$data[file1]) || eregi("\.gif",$data[file1]) || eregi("\.png",$data[file1]))) {
+    	$img = $setting[bbs_url] . "download.php?no=" . $data[uid] . "&code=" . urlencode($data[file1]) . "&type=none";
+    	$image_preview .= "<a href=\"" . $img . "\" target=\"_blank\"><img class=\"attach-file\" src=\"" . $img . "\" /></a><br /><br />";
+    }
+    if ($data[file2] && (eregi("\.jpg",$data[file2]) || eregi("\.gif",$data[file2]) || eregi("\.png",$data[file2]))) {
+    	$img = $setting[bbs_url] . "download.php?no=" . $data[uid] . "&code=" . urlencode($data[file2]) . "&type=none";
+    	$image_preview .= "<a href=\"" . $img . "\" target=\"_blank\"><img class=\"attach-file\" src=\"" . $img . "\" /></a><br /><br />";
+    }
+?>
+<div class="miniboard-wrapper miniboard-skin-default">
+	<div class="miniboard-view">
+        <div class="miniboard-table-top"></div>
+        <table class="miniboard-view-table">
+          <tr class="header">
+            <th>제목</th>
+            <td colspan="3">
+              <?=$data[subject]?>
+            </td>
+          </tr>
+          <tr> 
+            <th>작성자</th>
+            <td>
+              <?=$data[name]?>
+            </td>
+            <th>작성일</th>
+            <td>
+              <?=$data[write_date]?>
+            </td>
+          </tr>
+          <? if($data[file1]) : ?>
+          <tr> 
+            <th>첨부파일1</th>
+            <td colspan="3">
+              <a href="<?=$setting[bbs_url]?>download.php?no=<?=$data[uid]?>&code=<?=urlencode($data[file1])?>"><?=$data[file1]?></a>
+              (<?=@filesize($data[file1_src])?> Byte)
+            </td>
+          </tr>
+          <? endif; ?>
+          <? if($data[file2]) : ?>
+          <tr> 
+            <th>첨부파일2</th>
+            <td colspan="3">
+              <a href="<?=$setting[bbs_url]?>download.php?no=<?=$data[uid]?>&code=<?=urlencode($data[file2])?>"><?=$data[file2]?></a>
+              (<?=@filesize($data[file2_src])?> Byte)
+            </td>
+          </tr>
+          <? endif; ?>
+        </table>
+        <div class="miniboard-view-content">
+        	<?=$image_preview?>
+        	<?php echo $data['html'] == 'Y' ? $data['content'] : nl2br($data['content'])?>
+        </div>
+        <div class="miniboard-bottom">
+            <div class="miniboard-list-buttons">
+              <a class="button-middle btn-list" href="?mode=list<?=$setting[parameter]?>">목록</a>
+              <? if (!$setting[protect]) : ?>
+                <? if ($setting[admin] && $data[accept] == "N") : ?>
+                  <a class="button-middle" href="?mode=acceptAction&no=<?=$data[uid]?><?=$setting[parameter]?>">승인</a>
+                <? elseif ($setting[admin] && $data[accept] == "Y") : ?>
+                  <a class="button-middle" href="?mode=rejectAction&no=<?=$data[uid]?><?=$setting[parameter]?>">차단</a>
+                <? endif; ?>
+              <a class="button-middle" href="?mode=delete&no=<?=$data[uid]?><?=$setting[parameter]?>">삭제</a>
+              <a class="button-middle" href="?mode=modify&no=<?=$data[uid]?><?=$setting[parameter]?>">수정</a>
+              <a class="button-middle" href="?mode=reply&no=<?=$data[uid]?><?=$setting[parameter]?>">답변</a>
+              <? endif; ?>
+            </div>
+        </div>
+    </div>
+</div>

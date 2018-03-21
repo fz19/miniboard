@@ -1,0 +1,44 @@
+.text {
+	font-family: "µ¸¿ò", "Arial", "±¼¸²";
+	font-size: 12px;
+	color: #000;
+}
+.ptext {
+	font-family: "µ¸¿ò", "Arial", "±¼¸²";
+	font-size: 12px;
+	color: #333;
+}
+.error {
+	font-family: "µ¸¿ò", "Arial", "±¼¸²";
+	font-size: 12px;
+	color: #FF0000;
+}
+.field {
+	height:27px;
+	padding-left:15px;
+	font-family: "µ¸¿ò", "Arial", "±¼¸²";
+	font-size: 12px;
+	color: #333333;
+}
+.reject {
+	color:#FF0000;
+}
+.txtcontent {
+	padding:10px;
+	font-size:13px;
+}
+.input {
+	border: 1px solid #6B6B6B;
+}
+.highlight {
+	background:#FFFF00;
+}
+.pagenavi {
+	font-family: "µ¸¿ò", "Arial", "±¼¸²";
+	font-size: 13px;
+}
+.a-left {
+text-align:left;
+}
+
+form { margin:0 };

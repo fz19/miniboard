@@ -1,0 +1,137 @@
+<?
+	require "setup.php";
+    
+    $title = "";
+    switch($setting[mode]) {
+    	case "write":
+        	$title = "작성";
+            break;
+        case "reply":
+        	$title = "답글 작성";
+            break;
+        case "modify":
+        	$title = "수정";
+            break;
+    }
+?>
+<form action="?mode=writeAction<?=$setting[parameter]?>" method="post" enctype="multipart/form-data" onSubmit="return formCheck(this)">
+<!--<input type="hidden" name="MAX_FILE_SIZE" value="2048" />-->
+<input type="hidden" name="no" value="<?=$data[uid]?>" />
+<input type="hidden" name="writeMode" value="<?=$setting[mode]?>" />
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr> 
+      <td>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr bgcolor="#FF9900"> 
+            <td height="2" colspan="2" bgcolor="#B17A14"></td>
+          </tr>
+          <tr> 
+            <td height="27" colspan="2" class="text">
+              &nbsp;
+              <strong>게시글 <?=$title?></strong>
+            </td>
+          </tr>
+          <tr bgcolor="#FF9900"> 
+            <td height="1" colspan="2" bgcolor="#B17A14"></td>
+          </tr>
+          <tr>
+            <td width="70" class="field"><img src="<?=$dir?>images/icon_point.gif" width="11" height="11"> 게시글 설정</td>
+            <td class="text">
+              <? if (!$setting[board_secret]) : ?>
+           	  <input name="is_secret" type="checkbox" id="is_secret" value="1"<?=checked($data[secret])?>>비밀글
+              <? endif; ?>
+              <? if ($setting[mode] == "write" && $setting[admin]) :?>
+              <input name="is_notice" type="checkbox" id="is_notice" value="1"<?=checked($data[notice])?>>공지사항
+              <? endif; ?>
+              <input name="is_html" type="checkbox" id="is_html" value="1"<?=checked($data[html])?>>HTML            </td>
+          </tr>
+          <tr>
+            <td colspan="2" height="1" background="<?=$dir?>images/line.gif"></td>
+          </tr>
+          <? if (!$setting[admin]) : ?>
+          <tr>
+            <td class="field"><img src="<?=$dir?>images/icon_point.gif" width="11" height="11"> 비밀번호</td>
+            <td class="text"><input type="password" name="password" id="password">
+              비밀글 열람이나 게시글 수정, 삭제에 사용됩니다.</td>
+          </tr>
+		  <tr> 
+            <td colspan="2" height="1" background="<?=$dir?>images/line.gif"></td>
+          </tr>
+          <? endif; ?>
+          <tr> 
+            <td class="field"><img src="<?=$dir?>images/icon_point.gif" width="11" height="11"> 
+              작성자</td>
+            <td class="text"><input name="name" type="text" id="name" value="<?=$data[name]?>"></td>
+          </tr>
+		    <tr> 
+            <td colspan="2" height="1" background="<?=$dir?>images/line.gif">
+            <img src="" height="1"></td>
+          </tr>
+          <tr> 
+            <td class="field"><img src="<?=$dir?>images/icon_point.gif" width="11" height="11"> 
+              제목</td>
+            <td class="text"><input name="subject" type="text" id="subject" value="<?=$data[subject]?>" size="62"></td>
+          </tr>
+		    <tr> 
+            <td colspan="2" height="1" background="<?=$dir?>images/line.gif"></td>
+          </tr>
+          <tr> 
+            <td class="field"><img src="<?=$dir?>images/icon_point.gif" width="11" height="11"> 
+              내용</td>
+            <td class="text"><textarea name="content" cols="60" rows="10" id="txtcontent"><?=$data[content]?></textarea></td>
+          </tr>
+          <? if ($setting[board_file] == true) : ?>
+          <tr>
+            <td colspan="2" height="1" background="<?=$dir?>images/line.gif"></td>
+          </tr>
+          <tr> 
+            <td class="field"><img src="<?=$dir?>images/icon_point.gif" width="11" height="11"> 
+              첨부파일1</td>
+            <td class="text"><label>
+              <input name="file1" type="file" id="file1" size="40">
+            <? if($data[file1]) : ?>
+              <br>
+            <?=$data[file1]?> (<?=@filesize($data[file1_src])?> Byte) 
+            <input name="file1_del" type="checkbox" id="file1_del" value="delete">삭제</label>
+            <? endif; ?>
+            </td>
+          </tr>
+		  <tr> 
+            <td colspan="2" height="1" background="<?=$dir?>images/line.gif"></td>
+          </tr>
+          <tr> 
+            <td class="field"><img src="<?=$dir?>images/icon_point.gif" width="11" height="11"> 
+              첨부파일2</td>
+            <td class="text"><input name="file2" type="file" id="file2" size="40">
+            <? if($data[file2]) : ?>
+            <br>
+            <?=$data[file2]?> (<?=@filesize($data[file2_src])?> Byte) 
+            <input name="file2_del" type="checkbox" id="file2_del" value="delete">
+            삭제
+            <? endif; ?>
+            </td>
+          </tr>
+          <? endif; ?>
+          <tr bgcolor="#E7E7E7"> 
+            <td height="2"></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr> 
+      <td height="35" valign="bottom">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr> 
+            <td>
+              <a href="?mode=list<?=$setting[parameter]?>" onClick="history.back()"><img src="<?=$dir?>images/button_list.gif" width="60" height="21" border="0" alt="list" align="absmiddle"></a>
+            </td>
+            <td align="right">
+              <a href="#" onClick="history.back()"><img src="<?=$dir?>images/button_cancel.gif" alt="cancle" width="60" height="21" border="0"></a>
+              <input type="image" src="<?=$dir?>images/button_save.gif" alt="save" width="60" height="21" border="0">
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</form>

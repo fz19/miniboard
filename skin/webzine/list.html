@@ -1,0 +1,105 @@
+<?
+	require "setup.php";
+    
+    // prev, next 버튼 설정
+    $prev = $page - 1;
+    $next = $page + 1;
+    if ($prev < 1)
+    	$prev = 1;
+    if ($next > $setting[max_page])
+    	$next = $setting[max_page];
+    $prev = "?mode=list&page=" . $prev . $setting[list_parameter];
+    $next = "?mode=list&page=" . $next . $setting[list_parameter];
+    
+    $thum_dir = $setting[upload_dir] . "Thumnails_" . $setting[boardID]; // 썸네일 디렉토리
+    $thum_dir_url = $setting[upload_url] . "Thumnails_" . $setting[boardID]; // 썸네일 디렉토리 URL
+    if (!is_dir($thum_dir)) mkdir($thum_dir); // 디렉토리가 없다면 생성
+?>
+  <table width="800" border="0" cellspacing="0" cellpadding="0" class=>
+    <tr>
+      <td><table width="800" border="0" cellspacing="0" cellpadding="0" "miniboard-list-table">
+       
+         
+        <tr>
+          <td height="1" colspan="7" bgcolor="#F1F1F1"></td>
+        </tr>
+        <?
+$highlight = strlen($setting[s_text][0]) > 0 && ($setting[s_field] == "subject" || $setting[s_field] == "subject_content");
+$col = 0;
+foreach ($list as $row):
+	$no = $row[no];
+    $class = $row[accept]=="N"?"reject":"text";
+    
+    // 보여줄 이미지 선택
+    $image_name = "";
+    $image_src = "";
+    if ($row[file1] && is_imageFile($row[file1])) {
+    	$image_name = $row[no];
+    	$image_src = $setting[upload_dir] . $row[file1_src];
+	   	$image_url = $setting[bbs_url] . "download.php?no=" . $row[no] . "&code=" . urlencode($row[file1]) . "&type=preview";
+    }elseif ($row[file2] && is_imageFile($row[file2])){
+    	$image_name = $row[no];
+    	$image_src = $setting[upload_dir] . $row[file2_src];
+	   	$image_url = $setting[bbs_url] . "download.php?no=" . $row[no] . "&code=" . urlencode($row[file1]) . "&type=preview";
+    }else{
+    	$image_name = "noimage";
+    	$image_src = $setting[bbs_dir] . "skin/" . $setting[skin] . "/images/noimage.jpg";
+    }
+    
+    // 썸네일 만들기
+    $src = $thum_dir . "/" . $image_name . ".jpg";
+    $src_url = $thum_dir_url . "/" . $image_name . ".jpg";
+    $image_src_size = @getimagesize($image_src);
+    
+    // 메모리 아웃 에러 필터
+    if ($image_src_size[0] > 2000 || $image_src_size[1] > 2000){
+    	$image_src = $setting[bbs_dir] . "skin/" . $setting[skin] . "/images/noimage.jpg";
+        $src = $thum_dir . "/noimage.jpg";
+        $src_url = $thum_dir_url . "/noimage.jpg";
+    }
+    make_thumnail($image_src,$src,$thum_size);
+    
+	$img_size = @getimagesize($src);
+    
+    $row[image] =  "<a href=\"#\" onclick=\"popupImage('" . $image_url . "')\"><img src=\"" . $src_url . "\" alt=\"" . $row[subject] . "\" class=\"gimg\" width=\"" . $img_size[0] . "\" height=\"" . $img_size[1] . "\" border=\"0\" /></a><br />";
+    
+    
+?>
+        <tr class="text">
+         
+          <td width="341" height="195" align="center"><?=$row[image]?></td>
+          <td width="341" align="center"><?=replyIcon($row[space],$dir)?>
+              <a href="?mode=view&amp;no=<?=$row[no]?><?=$setting[parameter]?>" class="<?=$class?>">
+                <?=$row[subject]?>
+          </a></td>
+          
+          <td width="74" align="center"><?=$row[date]?></td>
+          
+        </tr>
+        <tr>
+          <td height="1" colspan="7" bgcolor="#F1F1F1"></td>
+        </tr>
+        <? endforeach; ?>
+        <tr>
+          <td height="1" colspan="7" bgcolor="#F1F1F1"></td>
+        </tr>
+      </table></td>
+    </tr>
+    <tr>
+      <td>
+        <table width="600" border="0" cellspacing="0" cellpadding="0">
+		  <tr>
+            <td width="427" height="30" align="left" class="pagenavi">
+              <a href="<?=$setting[prev_link]?>"><img src="<?=$dir?>images/button_prev1.gif" alt="prevpage" width="17" height="17" border="0" align="absmiddle" /></a>
+              <a href="<?=$prev?>"><img src="<?=$dir?>images/button_prev2.gif" width="40" height="17" border="0" alt="prev" align="absmiddle" /></a>
+              &nbsp;<?=$setting[page_navi]?>&nbsp;
+              <a href="<?=$next?>"><img src="<?=$dir?>images/button_next1.gif" width="40" height="17" border="0" alt="next" align="absmiddle" /></a>
+              <a href="<?=$setting[next_link]?>"><img src="<?=$dir?>images/button_next2.gif" width="17" height="17" border="0" alt="nextpage" align="absmiddle" /></a>            </td>
+            <td width="173" align="right" class="pagenavi"><a href="?mode=list"><img src="<?=$dir?>images/button_list.gif" width="60" height="21" border="0" alt="list" align="absmiddle" /></a>
+              <? if (!$setting[protect]) : ?>
+              <a href="?mode=write"><img src="<?=$dir?>images/button_write.gif" width="60" height="21" border="0" alt="write" align="absmiddle" /></a>
+              <? endif; ?></td>
+		  </tr>
+        </table>      </td>
+    </tr>
+  </table>

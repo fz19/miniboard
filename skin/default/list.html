@@ -1,0 +1,63 @@
+<?
+	require "setup.php";
+    
+    // prev, next 버튼 설정
+    $prev = $page - 1;
+    $next = $page + 1;
+    if ($prev < 1)
+    	$prev = 1;
+    if ($next > $setting[max_page])
+    	$next = $setting[max_page];
+    $prev = "?mode=list&page=" . $prev . $setting[list_parameter];
+    $next = "?mode=list&page=" . $next . $setting[list_parameter];
+?>
+<div class="miniboard-wrapper miniboard-skin-default">
+	<div class="miniboard-list">
+    	
+        <div class="miniboard-table-top"></div>
+        <table class="miniboard-list-table">
+          <tr class="header"> 
+            <th class="no">번호</th>
+            <th class="subject">제목</th>
+            <th class="writer">작성자</th>
+            <th class="date">작성일</th>
+            <th class="hit">조회수</th>
+          </tr>
+        <?
+        $highlight = strlen($setting[s_text][0]) > 0 && ($setting[s_field] == "subject" || $setting[s_field] == "subject_content");
+        $count = $setting[bbs_count]-($page-1)*$setting[list_count];
+        foreach ($list as $row):
+            $no = $count--;
+            $class = $row[accept]=="N"?"reject":"";
+            
+            if ($highlight) {
+                foreach ($setting[s_text] as $word)
+                    $row[subject] = text_highlight($word,$row[subject]);
+            }
+        ?>
+          <tr class="row"> 
+            <td class="no"><?=$no?></td>
+            <td class="subject"><?=replyIcon($row[space],$dir)?><a href="?mode=view&no=<?=$row[no]?><?=$setting[parameter]?>" class="<?=$class?>"><?=$row[subject]?></a></td>
+            <td class="writer"><?=$row[name]?></td>
+            <td class="date"><?=$row[date]?></td>
+            <td class="hit"><?=$row[hit]?></td>
+          </tr>
+		<? endforeach; ?>
+        </table>
+        <div class="miniboard-bottom">
+        	<div class="miniboard-list-pagenavi">
+                <a href="<?=$setting[prev_link]?>"><img src="<?=$dir?>images/button_prev1.gif" alt="prevpage" width="17" height="17" border="0" align="absmiddle" /></a>
+                <a href="<?=$prev?>"><img src="<?=$dir?>images/button_prev2.gif" width="40" height="17" border="0" alt="prev" align="absmiddle" /></a>
+                &nbsp;<?=$setting[page_navi]?>&nbsp;
+                <a href="<?=$next?>"><img src="<?=$dir?>images/button_next1.gif" width="40" height="17" border="0" alt="next" align="absmiddle" /></a>
+                <a href="<?=$setting[next_link]?>"><img src="<?=$dir?>images/button_next2.gif" width="17" height="17" border="0" alt="nextpage" align="absmiddle" /></a>
+            </div>
+            <div class="miniboard-list-buttons">
+                <a class="button-middle" href="?mode=list">목록</a>
+                <? if (!$setting[protect]) : ?>
+                <a class="button-middle" href="?mode=write">작성</a>
+                <? endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
