@@ -1,4 +1,4 @@
-<?
+<?php
 /*
 	* miniBoard 클래스
 	
